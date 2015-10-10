@@ -5,6 +5,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+    
+    <LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
 
     <!-- UI element declaration for "Get Directions" button -->
     <android.widget.Button
@@ -13,6 +18,17 @@
         android:layout_height="wrap_content"
         android:text="@string/label_button_getdirections"
         android:onClick="getDirections" />
+    
+	<!-- UI element declaration for "Select Destination" button -->
+    <android.widget.Button
+        android:id="@+id/confirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:onClick="confirmDestination" />
+    
+    </LinearLayout>
+    
 
     <TextView
         android:id="@+id/title"

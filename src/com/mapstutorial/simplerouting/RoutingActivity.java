@@ -11,7 +11,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.routing.RouteManager;
 import com.here.android.mpa.routing.RouteOptions;
@@ -46,8 +49,10 @@ public class RoutingActivity extends Activity implements ConnectionCallbacks, On
 
     // MapRoute for this activity
     private static MapRoute mapRoute = null;
+    private MapMarker mapMarker;
     
     GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,13 +68,28 @@ public class RoutingActivity extends Activity implements ConnectionCallbacks, On
                     // retrieve a reference of the map from the map fragment
                     map = mapFragment.getMap();
                     // Set the map center coordinate to the Vancouver region (no animation)
-                    map.setCenter(new GeoCoordinate(37.4292, -122.1381, 0.0), Map.Animation.NONE);
+                    map.setCenter(new GeoCoordinate(37.870490, -122.251557, 0.0), Map.Animation.NONE);
                     // Set the map zoom level to the average between min and max (no animation)
-                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+//                    map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+                    map.setZoomLevel(15);
+//                    Log.e("", "" + map.getMaxZoomLevel() + " " + map.getMinZoomLevel());
+
+                    mapMarker = new MapMarker();
+                    mapFragment.getMapGesture().addOnGestureListener(new CustomOnGestureListener(map, mapMarker));
                 } else {
                     Log.e(LOG_TAG, "Cannot initialize MapFragment (" + error + ")");
                 }
             }
+        });
+        
+        mapFragment.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				
+				return false;
+			}
+        	
         });
 
         textViewResult = (TextView) findViewById(R.id.title);
@@ -158,7 +178,7 @@ public class RoutingActivity extends Activity implements ConnectionCallbacks, On
 	@Override
 	public void onConnected(Bundle arg0) {
 		// TODO Auto-generated method stub
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
         	Log.e("RoutingActivity", String.valueOf(mLastLocation.getLatitude()) + String.valueOf(mLastLocation.getLongitude()));
@@ -192,5 +212,34 @@ public class RoutingActivity extends Activity implements ConnectionCallbacks, On
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+    }
+    
+    public void confirmDestination(View v) {
+    	GeoCoordinate src = new GeoCoordinate(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+    	GeoCoordinate dst = mapMarker.getCoordinate();
+    	Log.e("", "" + src.getLatitude() + " " + src.getLongitude());
+    	Log.e("", "" + dst.getLatitude() + " " + dst.getLongitude());
+    	// 2. Initialize RouteManager
+        RouteManager routeManager = new RouteManager();
+//
+//        // 3. Select routing options
+        RoutePlan routePlan = new RoutePlan();
+//
+        RouteOptions routeOptions = new RouteOptions();
+        routeOptions.setTransportMode(RouteOptions.TransportMode.PEDESTRIAN);
+        routeOptions.setRouteType(RouteOptions.Type.FASTEST);
+        routePlan.setRouteOptions(routeOptions);
+//
+//        // 4. Select Waypoints for your routes
+        routePlan.addWaypoint(src);
+        routePlan.addWaypoint(dst);
+//
+//        // 5. Retrieve Routing information via RouteManagerEventListener
+        RouteManager.Error error = routeManager.calculateRoute(routePlan, routeManagerListener);
+        if (error != RouteManager.Error.NONE) {
+            Toast.makeText(getApplicationContext(),
+                    "Route calculation failed with: " + error.toString(), Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 }
