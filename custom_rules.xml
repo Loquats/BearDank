@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SimpleRoutingSolutionCustomRules">
+    <target name="-pre-compile">
+        <path id="project.all.jars.path">
+            <path path="${toString:project.all.jars.path}" />
+            <fileset dir="${here.libs.dir}">
+                <include name="*.jar" />
+            </fileset>
+        </path>
+    </target>
+</project>
