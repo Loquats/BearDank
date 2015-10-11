@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/andy/Desktop/HERE-sdk/tutorial/SimpleRoutingSolution/libs/jtds-1.2.5.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="499fff84ababd73fd766639b83892643eab7ba75">
+        <dex dex="/Users/andy/Desktop/HERE-sdk/tutorial/SimpleRoutingSolution/build/intermediates/pre-dexed/debug/jtds-1.2.5-a33211bcdf8685f6945ff6e828cffa5697139972.jar" />
+    </item>
+
+</items>

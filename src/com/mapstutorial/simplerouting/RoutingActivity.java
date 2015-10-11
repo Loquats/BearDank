@@ -34,6 +34,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
+import java.sql.*;
 
 public class RoutingActivity extends Activity implements ConnectionCallbacks, OnConnectionFailedListener {
     private static final String LOG_TAG = RoutingActivity.class.getSimpleName();
@@ -96,6 +97,10 @@ public class RoutingActivity extends Activity implements ConnectionCallbacks, On
         textViewResult.setText(R.string.textview_routecoordinates_2waypoints);
         
         buildGoogleApiClient();
+
+        // SQL STUFF
+        SQLTask sqltask = new SQLTask();
+        sqltask.execute();
     }
 
     @Override
